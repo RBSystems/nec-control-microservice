@@ -60,7 +60,54 @@ func PowerStatus(context echo.Context) error {
 
 //SetInputPort sets the input port on the projector
 func SetInputPort(context echo.Context) error {
+	port := context.Param("port") //Get the port and store it to use later.
+	address := context.Param("address")
+	log.L.Infof("Switching input for %s to %s...", address, port)
 
+	baseInputCommand := "020300000201" //The base command to change input, the input value needs to be appended on the end
+
+	//Map for all the different input hex values
+	inputs := map[string]string{
+		"VGA1":      "01",
+		"VGA2":      "02",
+		"Video":     "06",
+		"Component": "10", // AKA YPbPr
+		"HDMI1":     "1A",
+		"HDMI2":     "1B",
+		"LAN":       "20", // AKA HDBaseT
+	}
+
+	var data string //Just a place holder to make it stop screaming at me
+
+	//Switch statment to handle all the input cases
+	switch port {
+	case "VGA1":
+		data = baseInputCommand + inputs["VGA1"]
+	case "VGA2":
+		data = baseInputCommand + inputs["VGA2"]
+	case "Video":
+		data = baseInputCommand + inputs["Video"]
+	case "Component":
+		data = baseInputCommand + inputs["Component"]
+	case "HDMI1":
+		data = baseInputCommand + inputs["HDMI1"]
+	case "HDMI2":
+		data = baseInputCommand + inputs["HDMI2"]
+	case "LAN":
+		data = baseInputCommand + inputs["LAN"]
+	default:
+		data = baseInputCommand
+	}
+
+	command, err := hex.DecodeString(data) //Hex command to request status
+
+	//Obligatory error checking...
+	if err != nil {
+		log.L.Errorf("Error: %v", err.Error())
+		return context.JSON(http.StatusInternalServerError, err.Error()) //Return that error and a server error
+	}
+
+	helpers.SendCommand(command, address) //Send the ring for Frodo to deliver
 	return nil
 }
 
