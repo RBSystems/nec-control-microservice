@@ -67,3 +67,15 @@ func SendCommand(command []byte, address string) ([]byte, *nerr.E) {
 	byteArray = append(byteArray, newbyteArray...)
 	return byteArray, nil
 }
+
+/*
+//getChecksum returns the checksum value at the end of the hex array
+func getChecksum(command []byte) (uint8, error) {
+	checksum := 0
+	for i := 0; i < command.Length(); i++ {
+		checksum += command[i]
+	}
+
+	return checksum, nil
+}
+*/

@@ -22,11 +22,11 @@ func main() {
 	secure.GET("/:address/power/on", handlers.PowerOn)
 	secure.GET("/:address/volume/set/:level", handlers.SetVolume)
 	secure.GET("/:address/power/standby", handlers.PowerStandby)
-	// secure.GET("/:address/volume/mute", handlers.Mute)
-	// secure.GET("/:address/volume/unmute", handlers.UnMute)
-	// secure.GET("/:address/display/blank", handlers.DisplayBlank)
-	// secure.GET("/:address/display/unblank", handlers.DisplayUnBlank)
-	// secure.GET("/:address/input/:port", handlers.SetInputPort)
+	secure.GET("/:address/volume/mute", handlers.Mute)
+	secure.GET("/:address/volume/unmute", handlers.UnMute)
+	secure.GET("/:address/display/blank", handlers.DisplayBlank)
+	secure.GET("/:address/display/unblank", handlers.DisplayUnBlank)
+	secure.GET("/:address/input/:port", handlers.SetInputPort)
 
 	//status endpoints
 	// secure.GET("/:address/volume/level", handlers.VolumeLevel)
