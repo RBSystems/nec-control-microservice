@@ -65,6 +65,8 @@ func SendCommand(command []byte, address string) ([]byte, *nerr.E) {
 	}
 
 	byteArray = append(byteArray, newbyteArray...)
+	
+	//This is the response, which is also a byte array, and the nil error
 	return byteArray, nil
 }
 
