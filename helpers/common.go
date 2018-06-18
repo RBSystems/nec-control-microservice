@@ -27,7 +27,6 @@ func getConnection(address string) (*net.TCPConn, *nerr.E) {
 // SendCommand sends the byte array to the desired address of projector
 func SendCommand(command []byte, address string) ([]byte, *nerr.E) {
 	log.L.Debugf("Sending command %x, to %v", command, address)
-	getConnection(address)
 	conn, err := getConnection(address)
 	if err != nil {
 		return []byte{}, err.Addf("Could not send command")
@@ -46,6 +45,8 @@ func SendCommand(command []byte, address string) ([]byte, *nerr.E) {
 	byteArray := make([]byte, 5)
 	conn.SetReadDeadline(time.Now().Add(3 * time.Second))
 
+	//TODO: Finish implementing the Read TCP
+	// reader := bufio.NewReader(conn)
 	numRead, readError := conn.Read(byteArray)
 	if numRead != len(byteArray) {
 		return []byte{}, nerr.Create("Couldn't read back command response", "error")
@@ -63,7 +64,7 @@ func SendCommand(command []byte, address string) ([]byte, *nerr.E) {
 	if readError != nil {
 		return []byte{}, nerr.Translate(err).Addf("Could not get new byte array value")
 	}
-
+	//byteArray is the response back from the projector
 	byteArray = append(byteArray, newbyteArray...)
 	return byteArray, nil
 }
