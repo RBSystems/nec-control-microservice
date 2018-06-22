@@ -3,6 +3,7 @@ package helpers
 import (
 	"fmt"
 
+	se "github.com/byuoitav/av-api/statusevaluators"
 	"github.com/byuoitav/common/log"
 )
 
@@ -10,7 +11,7 @@ import (
 func SetVolume(address string, volumeLevel int) error {
 	log.L.Infof("Setting volume of %s to %v", address, volumeLevel)
 
-	if volumeLevel > 100 || volumeLevel < 0 {
+	if volumeLevel > 32 || volumeLevel < 0 {
 		err := fmt.Errorf("Invalid volume level %v: must be in range 0-100", volumeLevel)
 		log.L.Errorf(err.Error())
 
@@ -24,9 +25,33 @@ func SetVolume(address string, volumeLevel int) error {
 	volumeCommand[8] = volume //Set the 8th byte to change the volume based on documentation
 
 	//Deliver the package
-	SendCommand(volumeCommand, address)
+	response, err := SendCommand(volumeCommand, address)     //Execute the command, DEW IT
+	log.L.Infof("The Super Cool Hex Chain is: %v", response) //Print da hex!
+	if err != nil {
+		return err
+	}
 
 	return nil
+}
+
+//GetVolumeLevel does just that...or does it?!?
+func GetVolumeLevel(address string) (se.Volume, error) {
+	log.L.Infof("Getting voulme status of %s...", address) //Print that the device is powering on
+
+	command := commands["VolumeLevel"] //Hex command to get the volume level
+
+	response, err := SendCommand(command, address)           //Execute the command, DEW IT
+	log.L.Infof("The Super Cool Hex Chain is: %v", response) //Print da hex!
+	if err != nil {
+		return se.Volume{}, err
+	}
+
+	//TODO: Pick up from here and finish implementation
+	// level, err := strconv.Atoi(fields[0])
+	// if err != nil {
+	// 	return se.Volume{}, err
+	// }
+	return se.Volume{Volume: 1}, nil
 }
 
 //SetMute makes things talk or be silent
@@ -45,4 +70,24 @@ func SetMute(address string, muted bool) error {
 	SendCommand(command, address)
 
 	return nil
+}
+
+//GetMuteStatus returns if the projector mute status
+func GetMuteStatus(address string) (se.MuteStatus, error) {
+	log.L.Infof("Getting mute status of %s...", address) //Print that the device is powering on
+
+	command := commands["MuteStatus"] //Hex command to get the Mute status
+
+	response, err := SendCommand(command, address)           //Execute the command, DEW IT
+	log.L.Infof("The Super Cool Hex Chain is: %v", response) //Print da hex!
+	if err != nil {
+		return se.MuteStatus{}, err
+	}
+
+	//According to the documentation the 6th byte handles the picture mute
+	if response[6] == byte(1) {
+		return se.MuteStatus{Muted: true}, nil
+	} else {
+		return se.MuteStatus{Muted: false}, nil
+	}
 }

@@ -1,11 +1,12 @@
 package helpers
 
 import (
+	"github.com/byuoitav/av-api/statusevaluators"
 	"github.com/byuoitav/common/log"
 )
 
 //SetInputPort sets the input on the projector
-func SetInputPort(address, port string) error {
+func SetInput(address, port string) error {
 	//Map for all the different input hex values
 	inputs := map[string]byte{
 		"VGA1":      0x01,
@@ -47,6 +48,33 @@ func SetInputPort(address, port string) error {
 	return nil
 }
 
+//GetInputStatus tells us which input the projector is currently on
+func GetInputStatus(address string) (statusevaluators.Input, error) {
+	log.L.Infof("Getting input status from %s ", address)
+	command := commands["InputStatus"] //Hex command to get the Input status
+
+	response, err := SendCommand(command, address)           //Execute the command, DEW IT
+	log.L.Infof("The Super Cool Hex Chain is: %v", response) //Print da hex!
+	if err != nil {
+		return statusevaluators.Input{}, err
+	}
+
+	//Have to declare first before using in if statements...so I'll leave it blank
+	status := statusevaluators.Input{""}
+
+	if response[7] == byte(1) && response[8] == byte(33) {
+		status = statusevaluators.Input{
+			Input: "hdmi1",
+		}
+	} else if response[7] == byte(2) && response[8] == byte(33) {
+		status = statusevaluators.Input{
+			Input: "hdmi2",
+		}
+	}
+	return status, nil
+
+}
+
 //SetBlank sets the blank status
 func SetBlank(address string, blank bool) error {
 	log.L.Infof("Setting blank on %s to %v", address, blank)
@@ -61,4 +89,27 @@ func SetBlank(address string, blank bool) error {
 	SendCommand(command, address) //Send the command
 
 	return nil
+}
+
+//GetBlankStatus tells us if the picture is blanked or not.
+func GetBlankStatus(address string) (statusevaluators.BlankedStatus, error) {
+	log.L.Infof("Getting blanked status of %s...", address) //Print that the device is powering on
+
+	command := commands["MuteStatus"] //Hex command to get the blanked status (MuteStatus also handles this case)
+
+	response, err := SendCommand(command, address)           //Execute the command, DEW IT
+	log.L.Infof("The Super Cool Hex Chain is: %v", response) //Print da hex!
+	if err != nil {
+		return statusevaluators.BlankedStatus{}, err
+	}
+
+	var status statusevaluators.BlankedStatus
+
+	//According to the documentation the 5th byte handles the picture mute
+	if response[5] == byte(1) {
+		status.Blanked = true
+	} else {
+		status.Blanked = false
+	}
+	return status, nil
 }

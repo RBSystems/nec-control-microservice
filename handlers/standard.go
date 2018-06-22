@@ -38,32 +38,43 @@ func PowerStandby(context echo.Context) error {
 
 //PowerStatus reports the running status of the projector, on or standby
 func PowerStatus(context echo.Context) error {
-	//address := context.Param("address")
+	address := context.Param("address")
 
-	// status, err := helpers.GetPowerStatus(address)
-	// if err != nil {
-	// 	return context.JSON(http.StatusInternalServerError, err.Error())
-	// }
+	status, err := helpers.GetPowerStatus(address)
+	if err != nil {
+		return context.JSON(http.StatusInternalServerError, err.Error())
+	}
 
-	// return context.JSON(http.StatusOK, status)
-	return nil
+	return context.JSON(http.StatusOK, status)
 }
 
 ////////////////////////////////////////
 //Input Controls
 ////////////////////////////////////////
 
-//SetInput sets the input port on the projector
-func SetInput(context echo.Context) error {
+//SetInputPort sets the input port on the projector
+func SetInputPort(context echo.Context) error {
 	port := context.Param("port") //Get the port and store it to use later.
 	address := context.Param("address")
 
-	err := helpers.SetInputPort(address, port) //Use SetInput to change to the selected port
+	err := helpers.SetInput(address, port) //Use SetInput to change to the selected port
 	if err != nil {
 		log.L.Errorf("Error: %v", err.Error())                           //Print out the error is being received
 		return context.JSON(http.StatusInternalServerError, err.Error()) //Return that error and a server error
 	}
 	return context.JSON(http.StatusOK, se.Input{port})
+}
+
+//InputStatus helps us get which input the projector is on
+func InputStatus(context echo.Context) error {
+	address := context.Param("address")
+
+	status, err := helpers.GetInputStatus(address)
+	if err != nil {
+		return context.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.JSON(http.StatusOK, status)
 }
 
 //DisplayBlank turns on the Onscreen mute, don't know quite what that means
@@ -93,6 +104,18 @@ func DisplayUnBlank(context echo.Context) error {
 	return context.JSON(http.StatusOK, se.BlankedStatus{false})
 }
 
+//BlankedStatus lets us see de way
+func BlankedStatus(context echo.Context) error {
+	address := context.Param("address")
+
+	status, err := helpers.GetBlankStatus(address)
+	if err != nil {
+		return context.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.JSON(http.StatusOK, status)
+}
+
 ////////////////////////////////////////
 //Volume Controls
 ////////////////////////////////////////
@@ -112,6 +135,19 @@ func SetVolume(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 	return context.JSON(http.StatusOK, se.Volume{volumeAsInt})
+}
+
+//VolumeLevel gets us how noisy things are getting
+func VolumeLevel(context echo.Context) error {
+
+	address := context.Param("address")
+
+	level, err := helpers.GetVolumeLevel(address)
+	if err != nil {
+		return context.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.JSON(http.StatusOK, level)
 }
 
 //Mute makes the projector be quiet
@@ -136,4 +172,16 @@ func UnMute(context echo.Context) error {
 	}
 
 	return context.JSON(http.StatusOK, se.MuteStatus{false})
+}
+
+//MuteStatus returns the Mute status, stating if mute is on or off
+func MuteStatus(context echo.Context) error {
+	address := context.Param("address")
+
+	status, err := helpers.GetMuteStatus(address)
+	if err != nil {
+		return context.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.JSON(http.StatusOK, status)
 }
