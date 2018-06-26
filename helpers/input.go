@@ -53,8 +53,8 @@ func GetInputStatus(address string) (statusevaluators.Input, error) {
 	log.L.Infof("Getting input status from %s ", address)
 	command := commands["InputStatus"] //Hex command to get the Input status
 
-	response, err := SendCommand(command, address)           //Execute the command, DEW IT
-	log.L.Infof("The Super Cool Hex Chain is: %v", response) //Print da hex!
+	response, err := SendCommand(command, address) //Execute the command, DEW IT
+	log.L.Infof("Projector Says: %v", response)    //Print da response!
 	if err != nil {
 		return statusevaluators.Input{}, err
 	}
@@ -97,8 +97,8 @@ func GetBlankStatus(address string) (statusevaluators.BlankedStatus, error) {
 
 	command := commands["MuteStatus"] //Hex command to get the blanked status (MuteStatus also handles this case)
 
-	response, err := SendCommand(command, address)           //Execute the command, DEW IT
-	log.L.Infof("The Super Cool Hex Chain is: %v", response) //Print da hex!
+	response, err := SendCommand(command, address) //Execute the command, DEW IT
+	log.L.Infof("Projector Says: %v", response)    //Print da response!
 	if err != nil {
 		return statusevaluators.BlankedStatus{}, err
 	}

@@ -125,16 +125,17 @@ func SetVolume(context echo.Context) error {
 	address := context.Param("address")
 	volumeLevel := context.Param("level")
 
-	//Make the volume level an int instead of a string.
-	volumeAsInt, err := strconv.Atoi(volumeLevel)
+	//change the volume from a string to an int
+	level, err := strconv.Atoi(volumeLevel)
 	if err != nil {
 		return context.JSON(http.StatusBadRequest, fmt.Sprintf("Invalid volume level %s. Must be in range 0-100. %s", volumeLevel, err.Error()))
 	}
-	err = helpers.SetVolume(address, volumeAsInt)
+
+	err = helpers.SetVolume(address, level)
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return context.JSON(http.StatusOK, se.Volume{volumeAsInt})
+	return context.JSON(http.StatusOK, se.Volume{level})
 }
 
 //VolumeLevel gets us how noisy things are getting

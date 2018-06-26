@@ -19,7 +19,7 @@ var commands = map[string][]byte{
 	"ScreenBlankOff": {0x02, 0x15, 0x00, 0x00, 0x00, 0x17},
 	"PowerStatus":    {0x00, 0x85, 0x00, 0x00, 0x01, 0x01, 0x87},
 	"MuteStatus":     {0x00, 0x85, 0x00, 0x00, 0x01, 0x03, 0x89},
-	"VolumeLevel":    {0x03, 0x05, 0x00, 0x00, 0x03, 0x05, 0x00, 0x00, 0x16},
+	"VolumeLevel":    {0x03, 0x05, 0x00, 0x00, 0x03, 0x96, 0x00, 0x00, 0x00},
 	"InputStatus":    {0x00, 0x85, 0x00, 0x00, 0x01, 0x02, 0x88},
 }
 
@@ -60,8 +60,6 @@ func SendCommand(command []byte, address string) ([]byte, *nerr.E) {
 	byteArray := make([]byte, 5)
 	conn.SetReadDeadline(time.Now().Add(3 * time.Second))
 
-	//TODO: Finish implementing the Read TCP
-	// reader := bufio.NewReader(conn)
 	numRead, readError := conn.Read(byteArray)
 	if numRead != len(byteArray) {
 		return []byte{}, nerr.Create("Couldn't read back command response", "error")
@@ -87,14 +85,11 @@ func SendCommand(command []byte, address string) ([]byte, *nerr.E) {
 	return byteArray, nil
 }
 
-/*
-//getChecksum returns the checksum value at the end of the hex array
-func getChecksum(command []byte) (uint8, error) {
-	checksum := 0
-	for i := 0; i < command.Length(); i++ {
+//getChecksum returns the checksum value for the end of the hex array
+func getChecksum(command []byte) byte {
+	var checksum byte = 0x00
+	for i := 0; i < len(command); i++ {
 		checksum += command[i]
 	}
-
-	return checksum, nil
+	return checksum
 }
-*/

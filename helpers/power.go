@@ -38,8 +38,8 @@ func GetPowerStatus(address string) (statusevaluators.PowerStatus, error) {
 	log.L.Infof("Getting power status of %s...", address) //Print the device status
 	command := commands["PowerStatus"]                    //Hex command to get the power status
 
-	response, err := SendCommand(command, address)           //Execute the command, DEW IT
-	log.L.Infof("The Super Cool Hex Chain is: %v", response) //Print da hex!
+	response, err := SendCommand(command, address) //Execute the command, DEW IT
+	log.L.Infof("Projector Says: %v", response)    //Print da response!
 	if err != nil {
 		return statusevaluators.PowerStatus{}, err
 	}
