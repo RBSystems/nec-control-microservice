@@ -12,14 +12,26 @@ func SetVolume(address string, volumeLevel int) error {
 	log.L.Infof("Setting volume of %s to %v", address, volumeLevel)
 
 	//We will need to map these values differently for a scale of 0 to 100 at another time.
-	if volumeLevel > 32 || volumeLevel < 0 {
-		err := fmt.Errorf("Invalid volume level %v: must be in range 0-32", volumeLevel)
+	if volumeLevel > 100 || volumeLevel < 0 {
+		err := fmt.Errorf("Invalid volume level %v: must be in range 0-31", volumeLevel)
 		log.L.Errorf(err.Error())
 
 		return err
 	}
 
-	volume := byte(volumeLevel) //make the volume int to a byte
+	//MAKE THINGS A FLOAT AND ALL YOUR PROBLEMS WILL FLOAT AWAY!
+	var level float64
+
+	//Check the volume to see it from 1-100
+	log.L.Infof("Volume Level is: %v", volumeLevel)
+
+	//Normalization the get the volume on a 1-100 scale -have to cast volume level to float64 for rounding purposes
+	level = (float64(volumeLevel) / 100) * 31
+
+	//make the volume int to a byte
+	volume := byte(level)
+
+	//Check to see what volume the projector is being set to.
 	log.L.Infof("Volume Level: %v", volume)
 
 	//Hex command to change the projector volume, this isn't even his final form! (Just a temporary holder for original value)
@@ -29,21 +41,14 @@ func SetVolume(address string, volumeLevel int) error {
 	//Copy the original array in to the new one as to not change the original
 	copy(volumeCommand, tempArray)
 
-	log.L.Infof("Vanilla Array: %v", volumeCommand)
-
-	volumeCommand[8] = volume //Set the 8th byte to change the volume based on documentation
-	log.L.Infof("THIS ISN'T EVEN MY FINAL FORM: %v", volumeCommand)
+	//Set the 8th byte to change the volume based on documentation
+	volumeCommand[8] = volume
 
 	//calculate the checksum
 	checkSum := getChecksum(volumeCommand)
 
-	//Print out the value just to check if I got the right value
-	log.L.Infof("Checksum value: %v", checkSum)
-
-	volumeCommand[10] = checkSum //Set the 10th byte to be the checksum as per documentation requirements
-
-	//Check the command again
-	log.L.Infof("MY FINAL FORM: %v", volumeCommand)
+	//Set the 10th byte to be the checksum as per documentation requirements
+	volumeCommand[10] = checkSum
 
 	//Deliver the package
 	response, err := SendCommand(volumeCommand, address) //Execute the command, DEW IT
@@ -60,7 +65,11 @@ func SetVolume(address string, volumeLevel int) error {
 func GetVolumeLevel(address string) (se.Volume, error) {
 	log.L.Infof("Getting voulme status of %s...", address) //Print that the device is powering on
 
-	command := commands["VolumeLevel"] //Hex command to get the volume level
+	tempArray := commands["VolumeLevel"]
+	//Now there are two of them!? This is getting out of hand!
+	command := make([]byte, len(tempArray))
+	//Copy the original array in to the new one as to not change the original
+	copy(command, tempArray)
 
 	log.L.Infof("Initial Command: %v \n", command)
 
@@ -70,6 +79,7 @@ func GetVolumeLevel(address string) (se.Volume, error) {
 	//Print out the value just to check if I got the right value
 	log.L.Infof("Checksum value: %v \n", checkSum)
 
+	//Set the final value of the array to the checksum as documentation requires
 	command[8] = checkSum
 
 	log.L.Infof("Command Sent to Projector: %v \n", command)
@@ -80,12 +90,17 @@ func GetVolumeLevel(address string) (se.Volume, error) {
 		return se.Volume{}, err
 	}
 
-	//TODO: Pick up from here and finish implementation
-	// level, err := strconv.Atoi(fields[0])
-	// if err != nil {
-	// 	return se.Volume{}, err
-	// }
-	return se.Volume{}, nil
+	//The 12th value of the response is the current volume level, translate that to an int
+	volumeLevel := float64(response[12])
+
+	//Renormalize to make it on a scale from 1-100
+	levelFloat := (volumeLevel / 31) * 100
+
+	//Change the level to an int because thats what the se.Volume return type is
+	level := int(levelFloat)
+
+	//Return the statusevaluator with the current volume level
+	return se.Volume{Volume: level}, nil
 }
 
 //SetMute makes things talk or be silent
