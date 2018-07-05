@@ -5,7 +5,7 @@ import (
 	"github.com/byuoitav/common/log"
 )
 
-//SetInputPort sets the input on the projector
+//SetInput sets the input on the projector
 func SetInput(address, port string) error {
 	//Map for all the different input hex values
 	inputs := map[string]byte{
@@ -32,9 +32,9 @@ func SetInput(address, port string) error {
 		baseInputCommand[6] = inputs["Video"]
 	case "Component":
 		baseInputCommand[6] = inputs["Component"]
-	case "HDMI1":
+	case "hdmi1":
 		baseInputCommand[6] = inputs["HDMI1"]
-	case "HDMI2":
+	case "hdmi2":
 		baseInputCommand[6] = inputs["HDMI2"]
 	case "LAN":
 		baseInputCommand[6] = inputs["LAN"]
@@ -54,7 +54,7 @@ func GetInputStatus(address string) (statusevaluators.Input, error) {
 	command := commands["InputStatus"] //Hex command to get the Input status
 
 	response, err := SendCommand(command, address) //Execute the command, DEW IT
-	log.L.Infof("Projector Says: %v", response)    //Print da response!
+	log.L.Debugf("Projector Says: %v", response)   //Print da response!
 	if err != nil {
 		return statusevaluators.Input{}, err
 	}
@@ -98,7 +98,7 @@ func GetBlankStatus(address string) (statusevaluators.BlankedStatus, error) {
 	command := commands["MuteStatus"] //Hex command to get the blanked status (MuteStatus also handles this case)
 
 	response, err := SendCommand(command, address) //Execute the command, DEW IT
-	log.L.Infof("Projector Says: %v", response)    //Print da response!
+	log.L.Debugf("Projector Says: %v", response)   //Print da response!
 	if err != nil {
 		return statusevaluators.BlankedStatus{}, err
 	}

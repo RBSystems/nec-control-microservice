@@ -10,7 +10,7 @@ func PowerOn(address string) error {
 	log.L.Infof("Setting power of %v to on...", address) //Print that the device is powering on
 	command := commands["PowerOn"]                       //Hex command to turn on the projector
 	response, err := SendCommand(command, address)       //Execute the command, DEW IT
-	log.L.Infof("%v", response)
+	log.L.Debugf("%v", response)
 	if err != nil {
 		log.L.Info("Nope Didn't work! - %v", err.Error())
 		return err
@@ -24,7 +24,7 @@ func PowerStandby(address string) error {
 	log.L.Infof("Setting power of %v to standby...", address) //Print that the device is powering on
 	command := commands["Standby"]                            //Hex command to turn off the projector
 	response, err := SendCommand(command, address)            //Execute the command, DEW IT
-	log.L.Infof("%v", response)
+	log.L.Debugf("%v", response)
 	if err != nil {
 		log.L.Info("Nope Didn't work! - %v", err.Error())
 		return err
@@ -38,8 +38,8 @@ func GetPowerStatus(address string) (statusevaluators.PowerStatus, error) {
 	log.L.Infof("Getting power status of %s...", address) //Print the device status
 	command := commands["PowerStatus"]                    //Hex command to get the power status
 
-	response, err := SendCommand(command, address) //Execute the command, DEW IT
-	log.L.Infof("Projector Says: %v", response)    //Print da response!
+	response, err := SendCommand(command, address)   //Execute the command, DEW IT
+	log.L.Debugf("Projector Response: %v", response) //Print da response!
 	if err != nil {
 		return statusevaluators.PowerStatus{}, err
 	}

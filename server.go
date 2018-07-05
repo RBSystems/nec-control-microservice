@@ -11,6 +11,8 @@ import (
 
 func main() {
 
+	// log.SetLevel("debug")
+
 	port := ":8020"
 	router := echo.New()
 	router.Pre(middleware.RemoveTrailingSlash())

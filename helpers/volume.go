@@ -52,7 +52,7 @@ func SetVolume(address string, volumeLevel int) error {
 
 	//Deliver the package
 	response, err := SendCommand(volumeCommand, address) //Execute the command, DEW IT
-	log.L.Infof("Projector Says: %v", response)          //Print da response!
+	log.L.Debugf("Projector Says: %v", response)         //Print da response!
 	if err != nil {
 		return err
 	}
@@ -71,21 +71,16 @@ func GetVolumeLevel(address string) (se.Volume, error) {
 	//Copy the original array in to the new one as to not change the original
 	copy(command, tempArray)
 
-	log.L.Infof("Initial Command: %v \n", command)
-
 	//calculate the checksum
 	checkSum := getChecksum(command)
-
-	//Print out the value just to check if I got the right value
-	log.L.Infof("Checksum value: %v \n", checkSum)
 
 	//Set the final value of the array to the checksum as documentation requires
 	command[8] = checkSum
 
-	log.L.Infof("Command Sent to Projector: %v \n", command)
+	log.L.Debugf("Command Sent to Projector: %v \n", command)
 
-	response, err := SendCommand(command, address)  //Execute the command, DEW IT
-	log.L.Infof("Projector response: %v", response) //Print da response!
+	response, err := SendCommand(command, address)   //Execute the command, DEW IT
+	log.L.Debugf("Projector response: %v", response) //Print da response!
 	if err != nil {
 		return se.Volume{}, err
 	}
@@ -127,8 +122,8 @@ func GetMuteStatus(address string) (se.MuteStatus, error) {
 
 	command := commands["MuteStatus"] //Hex command to get the Mute status
 
-	response, err := SendCommand(command, address)           //Execute the command, DEW IT
-	log.L.Infof("The Super Cool Hex Chain is: %v", response) //Print da response!
+	response, err := SendCommand(command, address)   //Execute the command, DEW IT
+	log.L.Debugf("Projector Response: %v", response) //Print da response!
 	if err != nil {
 		return se.MuteStatus{}, err
 	}
