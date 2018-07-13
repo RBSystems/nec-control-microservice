@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	se "github.com/byuoitav/av-api/statusevaluators"
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/status"
 	"github.com/byuoitav/nec-control-microservice/helpers"
 	"github.com/labstack/echo"
 )
@@ -22,7 +22,7 @@ func PowerOn(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return context.JSON(http.StatusOK, se.PowerStatus{"on"}) //Return JSON for on
+	return context.JSON(http.StatusOK, status.Power{"on"}) //Return JSON for on
 }
 
 //PowerStandby helps with turining on the projector
@@ -33,7 +33,7 @@ func PowerStandby(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return context.JSON(http.StatusOK, se.PowerStatus{"standby"}) //Return JSON for standby
+	return context.JSON(http.StatusOK, status.Power{"standby"}) //Return JSON for standby
 }
 
 //PowerStatus reports the running status of the projector, on or standby
@@ -62,7 +62,7 @@ func SetInputPort(context echo.Context) error {
 		log.L.Errorf("Error: %v", err.Error())                           //Print out the error is being received
 		return context.JSON(http.StatusInternalServerError, err.Error()) //Return that error and a server error
 	}
-	return context.JSON(http.StatusOK, se.Input{port})
+	return context.JSON(http.StatusOK, status.Input{port})
 }
 
 //InputStatus helps us get which input the projector is on
@@ -87,7 +87,7 @@ func DisplayBlank(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return context.JSON(http.StatusOK, se.BlankedStatus{true})
+	return context.JSON(http.StatusOK, status.Blanked{true})
 }
 
 //DisplayUnBlank turns off the mysterious Onscreen mute, again, don't know quite what that means
@@ -101,7 +101,7 @@ func DisplayUnBlank(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return context.JSON(http.StatusOK, se.BlankedStatus{false})
+	return context.JSON(http.StatusOK, status.Blanked{false})
 }
 
 //BlankedStatus lets us see de way
@@ -135,7 +135,7 @@ func SetVolume(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return context.JSON(http.StatusOK, se.Volume{level})
+	return context.JSON(http.StatusOK, status.Volume{level})
 }
 
 //VolumeLevel gets us how noisy things are getting
@@ -160,7 +160,7 @@ func Mute(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return context.JSON(http.StatusOK, se.MuteStatus{true})
+	return context.JSON(http.StatusOK, status.Mute{true})
 }
 
 //UnMute makes the projector noisy again
@@ -172,7 +172,7 @@ func UnMute(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return context.JSON(http.StatusOK, se.MuteStatus{false})
+	return context.JSON(http.StatusOK, status.Mute{false})
 }
 
 //MuteStatus returns the Mute status, stating if mute is on or off

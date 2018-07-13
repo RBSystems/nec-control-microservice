@@ -1,8 +1,8 @@
 package helpers
 
 import (
-	"github.com/byuoitav/av-api/statusevaluators"
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/status"
 )
 
 //SetInput sets the input on the projector
@@ -49,29 +49,29 @@ func SetInput(address, port string) error {
 }
 
 //GetInputStatus tells us which input the projector is currently on
-func GetInputStatus(address string) (statusevaluators.Input, error) {
+func GetInputStatus(address string) (status.Input, error) {
 	log.L.Infof("Getting input status from %s ", address)
 	command := commands["InputStatus"] //Hex command to get the Input status
 
 	response, err := SendCommand(command, address) //Execute the command, DEW IT
 	log.L.Debugf("Projector Says: %v", response)   //Print da response!
 	if err != nil {
-		return statusevaluators.Input{}, err
+		return status.Input{}, err
 	}
 
 	//Have to declare first before using in if statements...so I'll leave it blank
-	status := statusevaluators.Input{""}
+	statuss := status.Input{""}
 
 	if response[7] == byte(1) && response[8] == byte(33) {
-		status = statusevaluators.Input{
+		statuss = status.Input{
 			Input: "hdmi1",
 		}
 	} else if response[7] == byte(2) && response[8] == byte(33) {
-		status = statusevaluators.Input{
+		statuss = status.Input{
 			Input: "hdmi2",
 		}
 	}
-	return status, nil
+	return statuss, nil
 
 }
 
@@ -92,7 +92,7 @@ func SetBlank(address string, blank bool) error {
 }
 
 //GetBlankStatus tells us if the picture is blanked or not.
-func GetBlankStatus(address string) (statusevaluators.BlankedStatus, error) {
+func GetBlankStatus(address string) (status.Blanked, error) {
 	log.L.Infof("Getting blanked status of %s...", address) //Print that the device is powering on
 
 	command := commands["MuteStatus"] //Hex command to get the blanked status (MuteStatus also handles this case)
@@ -100,10 +100,10 @@ func GetBlankStatus(address string) (statusevaluators.BlankedStatus, error) {
 	response, err := SendCommand(command, address) //Execute the command, DEW IT
 	log.L.Debugf("Projector Says: %v", response)   //Print da response!
 	if err != nil {
-		return statusevaluators.BlankedStatus{}, err
+		return status.Blanked{}, err
 	}
 
-	var status statusevaluators.BlankedStatus
+	var status status.Blanked
 
 	//According to the documentation the 5th byte handles the picture mute
 	if response[5] == byte(1) {
