@@ -1,9 +1,8 @@
 package helpers
 
 import (
-
-	"github.com/byuoitav/av-api/statusevaluators"
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/status"
 )
 
 //PowerOn sends the command for the power to turn on

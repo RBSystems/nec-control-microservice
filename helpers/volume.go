@@ -5,7 +5,6 @@ import (
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/status"
-
 )
 
 //SetVolume makes the projector louder or quieter
@@ -65,10 +64,7 @@ func SetVolume(address string, volumeLevel int) error {
 //GetVolumeLevel does just that...or does it?!?
 func GetVolumeLevel(address string) (status.Volume, error) {
 
-	log.L.Infof("Getting voulme status of %s...",<<<<<<< master
-140
- 
- address) //Print that the device is powering on
+	log.L.Infof("Getting voulme status of %s...", address) //Print that the device is powering on
 
 	tempArray := commands["VolumeLevel"]
 	//Now there are two of them!? This is getting out of hand!
