@@ -49,7 +49,9 @@ func SetInput(address, port string) error {
 }
 
 //GetInputStatus tells us which input the projector is currently on
+
 func GetInputStatus(address string) (status.Input, error) {
+
 	log.L.Infof("Getting input status from %s ", address)
 	command := commands["InputStatus"] //Hex command to get the Input status
 
@@ -72,7 +74,6 @@ func GetInputStatus(address string) (status.Input, error) {
 		}
 	}
 	return statuss, nil
-
 }
 
 //SetBlank sets the blank status
@@ -93,6 +94,7 @@ func SetBlank(address string, blank bool) error {
 
 //GetBlankStatus tells us if the picture is blanked or not.
 func GetBlankStatus(address string) (status.Blanked, error) {
+
 	log.L.Infof("Getting blanked status of %s...", address) //Print that the device is powering on
 
 	command := commands["MuteStatus"] //Hex command to get the blanked status (MuteStatus also handles this case)
@@ -100,6 +102,7 @@ func GetBlankStatus(address string) (status.Blanked, error) {
 	response, err := SendCommand(command, address) //Execute the command, DEW IT
 	log.L.Debugf("Projector Says: %v", response)   //Print da response!
 	if err != nil {
+
 		return status.Blanked{}, err
 	}
 

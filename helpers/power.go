@@ -1,8 +1,9 @@
 package helpers
 
 import (
+
+	"github.com/byuoitav/av-api/statusevaluators"
 	"github.com/byuoitav/common/log"
-	"github.com/byuoitav/common/status"
 )
 
 //PowerOn sends the command for the power to turn on
@@ -35,6 +36,7 @@ func PowerStandby(address string) error {
 
 //GetPowerStatus will give the power status of the projector
 func GetPowerStatus(address string) (status.Power, error) {
+
 	log.L.Infof("Getting power status of %s...", address) //Print the device status
 	command := commands["PowerStatus"]                    //Hex command to get the power status
 

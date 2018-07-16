@@ -5,6 +5,7 @@ import (
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/status"
+
 )
 
 //SetVolume makes the projector louder or quieter
@@ -63,7 +64,11 @@ func SetVolume(address string, volumeLevel int) error {
 
 //GetVolumeLevel does just that...or does it?!?
 func GetVolumeLevel(address string) (status.Volume, error) {
-	log.L.Infof("Getting voulme status of %s...", address) //Print that the device is powering on
+
+	log.L.Infof("Getting voulme status of %s...",<<<<<<< master
+140
+ 
+ address) //Print that the device is powering on
 
 	tempArray := commands["VolumeLevel"]
 	//Now there are two of them!? This is getting out of hand!
@@ -83,6 +88,7 @@ func GetVolumeLevel(address string) (status.Volume, error) {
 	log.L.Debugf("Projector response: %v", response) //Print da response!
 	if err != nil {
 		return status.Volume{}, err
+
 	}
 
 	//The 12th value of the response is the current volume level, translate that to an int
@@ -96,6 +102,7 @@ func GetVolumeLevel(address string) (status.Volume, error) {
 
 	//Return the statusevaluator with the current volume level
 	return status.Volume{Volume: level}, nil
+
 }
 
 //SetMute makes things talk or be silent
@@ -118,6 +125,7 @@ func SetMute(address string, muted bool) error {
 
 //GetMuteStatus returns if the projector mute status
 func GetMuteStatus(address string) (status.Mute, error) {
+
 	log.L.Infof("Getting mute status of %s...", address) //Print that the device is powering on
 
 	command := commands["MuteStatus"] //Hex command to get the Mute status
@@ -126,6 +134,7 @@ func GetMuteStatus(address string) (status.Mute, error) {
 	log.L.Debugf("Projector Response: %v", response) //Print da response!
 	if err != nil {
 		return status.Mute{}, err
+
 	}
 
 	//According to the documentation the 6th byte handles the picture mute

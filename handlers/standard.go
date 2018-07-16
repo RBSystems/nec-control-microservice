@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
+
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/status"
+
 	"github.com/byuoitav/nec-control-microservice/helpers"
 	"github.com/labstack/echo"
 )
@@ -22,7 +24,9 @@ func PowerOn(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
+
 	return context.JSON(http.StatusOK, status.Power{"on"}) //Return JSON for on
+
 }
 
 //PowerStandby helps with turining on the projector
@@ -33,7 +37,9 @@ func PowerStandby(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
+
 	return context.JSON(http.StatusOK, status.Power{"standby"}) //Return JSON for standby
+
 }
 
 //PowerStatus reports the running status of the projector, on or standby
@@ -63,6 +69,7 @@ func SetInputPort(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err.Error()) //Return that error and a server error
 	}
 	return context.JSON(http.StatusOK, status.Input{port})
+
 }
 
 //InputStatus helps us get which input the projector is on
@@ -87,7 +94,9 @@ func DisplayBlank(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 
+
 	return context.JSON(http.StatusOK, status.Blanked{true})
+
 }
 
 //DisplayUnBlank turns off the mysterious Onscreen mute, again, don't know quite what that means
@@ -100,6 +109,7 @@ func DisplayUnBlank(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
+
 
 	return context.JSON(http.StatusOK, status.Blanked{false})
 }
@@ -135,7 +145,9 @@ func SetVolume(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
+
 	return context.JSON(http.StatusOK, status.Volume{level})
+
 }
 
 //VolumeLevel gets us how noisy things are getting
@@ -160,6 +172,7 @@ func Mute(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 
+
 	return context.JSON(http.StatusOK, status.Mute{true})
 }
 
@@ -171,6 +184,7 @@ func UnMute(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
+
 
 	return context.JSON(http.StatusOK, status.Mute{false})
 }
