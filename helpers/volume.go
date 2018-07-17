@@ -3,8 +3,8 @@ package helpers
 import (
 	"fmt"
 
-	se "github.com/byuoitav/av-api/statusevaluators"
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/status"
 )
 
 //SetVolume makes the projector louder or quieter
@@ -62,7 +62,8 @@ func SetVolume(address string, volumeLevel int) error {
 }
 
 //GetVolumeLevel does just that...or does it?!?
-func GetVolumeLevel(address string) (se.Volume, error) {
+func GetVolumeLevel(address string) (status.Volume, error) {
+
 	log.L.Infof("Getting voulme status of %s...", address) //Print that the device is powering on
 
 	tempArray := commands["VolumeLevel"]
@@ -82,7 +83,8 @@ func GetVolumeLevel(address string) (se.Volume, error) {
 	response, err := SendCommand(command, address)   //Execute the command, DEW IT
 	log.L.Debugf("Projector response: %v", response) //Print da response!
 	if err != nil {
-		return se.Volume{}, err
+		return status.Volume{}, err
+
 	}
 
 	//The 12th value of the response is the current volume level, translate that to an int
@@ -91,11 +93,12 @@ func GetVolumeLevel(address string) (se.Volume, error) {
 	//Renormalize to make it on a scale from 1-100
 	levelFloat := (volumeLevel / 31) * 100
 
-	//Change the level to an int because thats what the se.Volume return type is
+	//Change the level to an int because thats what the status.Volume return type is
 	level := int(levelFloat)
 
 	//Return the statusevaluator with the current volume level
-	return se.Volume{Volume: level}, nil
+	return status.Volume{Volume: level}, nil
+
 }
 
 //SetMute makes things talk or be silent
@@ -117,7 +120,8 @@ func SetMute(address string, muted bool) error {
 }
 
 //GetMuteStatus returns if the projector mute status
-func GetMuteStatus(address string) (se.MuteStatus, error) {
+func GetMuteStatus(address string) (status.Mute, error) {
+
 	log.L.Infof("Getting mute status of %s...", address) //Print that the device is powering on
 
 	command := commands["MuteStatus"] //Hex command to get the Mute status
@@ -125,13 +129,14 @@ func GetMuteStatus(address string) (se.MuteStatus, error) {
 	response, err := SendCommand(command, address)   //Execute the command, DEW IT
 	log.L.Debugf("Projector Response: %v", response) //Print da response!
 	if err != nil {
-		return se.MuteStatus{}, err
+		return status.Mute{}, err
+
 	}
 
 	//According to the documentation the 6th byte handles the picture mute
 	if response[6] == byte(1) {
-		return se.MuteStatus{Muted: true}, nil
+		return status.Mute{Muted: true}, nil
 	} else {
-		return se.MuteStatus{Muted: false}, nil
+		return status.Mute{Muted: false}, nil
 	}
 }
