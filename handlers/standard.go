@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 
-
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/status"
 
@@ -63,11 +62,15 @@ func SetInputPort(context echo.Context) error {
 	port := context.Param("port") //Get the port and store it to use later.
 	address := context.Param("address")
 
+	log.L.Infof("Switching input for %s to %s...", address, port) //Tell us what you plan on doing
+
 	err := helpers.SetInput(address, port) //Use SetInput to change to the selected port
 	if err != nil {
 		log.L.Errorf("Error: %v", err.Error())                           //Print out the error is being received
 		return context.JSON(http.StatusInternalServerError, err.Error()) //Return that error and a server error
 	}
+
+	log.L.Infof("Done!") //Finished Changing inputs
 	return context.JSON(http.StatusOK, status.Input{port})
 
 }
@@ -87,13 +90,12 @@ func InputStatus(context echo.Context) error {
 //DisplayBlank turns on the Onscreen mute, don't know quite what that means
 func DisplayBlank(context echo.Context) error {
 	address := context.Param("address")
-	log.L.Infof("Blanking Display...")
+	log.L.Infof("Blanking Display on %s...", address)
 
 	err := helpers.SetBlank(address, true)
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
-
 
 	return context.JSON(http.StatusOK, status.Blanked{true})
 
@@ -109,7 +111,6 @@ func DisplayUnBlank(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
-
 
 	return context.JSON(http.StatusOK, status.Blanked{false})
 }
@@ -172,7 +173,6 @@ func Mute(context echo.Context) error {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-
 	return context.JSON(http.StatusOK, status.Mute{true})
 }
 
@@ -184,7 +184,6 @@ func UnMute(context echo.Context) error {
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
-
 
 	return context.JSON(http.StatusOK, status.Mute{false})
 }
