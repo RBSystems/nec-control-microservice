@@ -9,41 +9,52 @@ import (
 func SetInput(address, port string) error {
 	//Map for all the different input hex values
 	inputs := map[string]byte{
-		"vga1":      0x01,
-		"vga2":      0x02,
-		"Video":     0x06,
-		"Component": 0x10, // AKA YPbPr
-		"hdmi1":     0x1A,
-		"hdmi2":     0x1B,
-		"hdbaset1":  0x20, // AKA HDBaseT
+		"computer":  0x01,
+		"video":     0x06, // Yellow cable for RYW
+		"component": 0x10,
+		"hdmi1":     0xA1,
+		"hdmi2":     0xA2,
+		"hdbaset1":  0xBF, // AKA HDBaseT
 	}
 
-	baseInputCommand := commands["ChangeInput"] //The base command to change input, the input value at position 6 will need to change based on input
+	//Hex command to change the projector volume, it is going in a temporary Array as to not change its original value
+	tempArray := commands["ChangeInput"]
+
+	//Make an empty byte array the size of the original command
+	inputCommand := make([]byte, len(tempArray))
+
+	//Copy the original array in to the new one as to not change the original
+	copy(inputCommand, tempArray)
 
 	//Switch statment to handle all the input cases
 	switch port {
-	case "vga1":
-		baseInputCommand[6] = inputs["VGA1"]
-	case "vga2":
-		baseInputCommand[6] = inputs["VGA2"]
-	case "Video":
-		baseInputCommand[6] = inputs["Video"]
-	case "Component":
-		baseInputCommand[6] = inputs["Component"]
+	case "computer":
+		inputCommand[6] = inputs["computer"]
+	case "video":
+		inputCommand[6] = inputs["video"]
+	case "component":
+		inputCommand[6] = inputs["component"]
 	case "hdmi1":
-		baseInputCommand[6] = inputs["hdmi1"]
+		inputCommand[6] = inputs["hdmi1"]
 	case "hdmi2":
-		baseInputCommand[6] = inputs["hdmi2"]
+		inputCommand[6] = inputs["hdmi2"]
 	case "hdbaset1":
-		baseInputCommand[6] = inputs["hdbaset1"]
+		inputCommand[6] = inputs["hdbaset1"]
 	default:
 		break
 	}
 
-	command := baseInputCommand
-	SendCommand(command, address) //Send the ring for Frodo to deliver
+	checkSum := getChecksum(inputCommand) //Calculate the checksum
 
-	log.L.Infof("Projector Says: %v", SendCommand) //Print da response!
+	inputCommand[7] = checkSum //Put the checksum value at the end of the change input command
+
+	log.L.Debugf("Command being sent is: %v", inputCommand) //Print out the command that will be sent in case I want to verify
+
+	response, err := SendCommand(inputCommand, address) //Send the ring for Frodo to deliver
+	log.L.Debugf("Projector Says: %v", response)        //Print da response!
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
