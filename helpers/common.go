@@ -90,7 +90,7 @@ func SendCommand(command []byte, address string) ([]byte, *nerr.E) {
 
 //getChecksum returns the checksum value for the end of the hex array
 func getChecksum(command []byte) byte {
-	var checksum byte = 0x00
+	var checksum byte
 	for i := 0; i < len(command); i++ {
 		checksum += command[i]
 	}
