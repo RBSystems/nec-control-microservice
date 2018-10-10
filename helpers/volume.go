@@ -32,7 +32,7 @@ func SetVolume(address string, volumeLevel int) error {
 	volume := byte(level)
 
 	//Check to see what volume the projector is being set to.
-	log.L.Infof("Volume Level: %v", volume)
+	log.L.Infof("Volume Level (Hex Value for Projector): %v", volume)
 
 	//Hex command to change the projector volume, this isn't even his final form! (Just a temporary holder for original value)
 	tempArray := commands["Volume"]
@@ -104,14 +104,16 @@ func GetVolumeLevel(address string) (status.Volume, error) {
 //SetMute makes things talk or be silent
 func SetMute(address string, muted bool) error {
 
+	//Have an empty byte array to store the command in
 	var command []byte
+
 	//If muted value is true, mute the projector, else unmute
 	if muted {
-		log.L.Infof("Muting %s...", address)
+		//Turn Mute on
 		command = commands["MuteOn"] //Hex command to mute the projector
 	} else {
-		log.L.Infof("Un-muting %s", address)
-		command = commands["MuteOff"] //Hex command to mute the projector
+		//turn Mute off
+		command = commands["MuteOff"] //Hex command to Unmute the projector
 	}
 
 	SendCommand(command, address)
@@ -121,9 +123,6 @@ func SetMute(address string, muted bool) error {
 
 //GetMuteStatus returns if the projector mute status
 func GetMuteStatus(address string) (status.Mute, error) {
-
-	log.L.Infof("Getting mute status of %s...", address) //Print that the device is powering on
-
 	command := commands["MuteStatus"] //Hex command to get the Mute status
 
 	response, err := SendCommand(command, address)   //Execute the command, DEW IT

@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 
-
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/status"
 
@@ -19,7 +18,9 @@ import (
 
 //PowerOn helps with turining on the projector
 func PowerOn(context echo.Context) error {
-	address := context.Param("address") //This address will make a fine addition
+	address := context.Param("address")                  //Get the address of the display
+	log.L.Infof("Setting power of %v to on...", address) //Print that the device is powering on
+
 	err := helpers.PowerOn(address)
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
@@ -31,7 +32,9 @@ func PowerOn(context echo.Context) error {
 
 //PowerStandby helps with turining on the projector
 func PowerStandby(context echo.Context) error {
-	address := context.Param("address") //Nab that there address
+	address := context.Param("address")                       //Nab that there address
+	log.L.Infof("Setting power of %v to standby...", address) //Print that the device is powering off
+
 	err := helpers.PowerStandby(address)
 	//Do the error checking
 	if err != nil {
@@ -45,6 +48,7 @@ func PowerStandby(context echo.Context) error {
 //PowerStatus reports the running status of the projector, on or standby
 func PowerStatus(context echo.Context) error {
 	address := context.Param("address")
+	log.L.Infof("Getting power status of %s...", address) //Print the device status
 
 	status, err := helpers.GetPowerStatus(address)
 	if err != nil {
@@ -63,11 +67,15 @@ func SetInputPort(context echo.Context) error {
 	port := context.Param("port") //Get the port and store it to use later.
 	address := context.Param("address")
 
+	log.L.Infof("Switching input for %s to %s...", address, port) //Tell us what you plan on doing
+
 	err := helpers.SetInput(address, port) //Use SetInput to change to the selected port
 	if err != nil {
 		log.L.Errorf("Error: %v", err.Error())                           //Print out the error is being received
 		return context.JSON(http.StatusInternalServerError, err.Error()) //Return that error and a server error
 	}
+
+	log.L.Infof("Done!") //Finished Changing inputs
 	return context.JSON(http.StatusOK, status.Input{port})
 
 }
@@ -75,6 +83,7 @@ func SetInputPort(context echo.Context) error {
 //InputStatus helps us get which input the projector is on
 func InputStatus(context echo.Context) error {
 	address := context.Param("address")
+	log.L.Infof("Getting input status from %s ", address)
 
 	status, err := helpers.GetInputStatus(address)
 	if err != nil {
@@ -87,36 +96,36 @@ func InputStatus(context echo.Context) error {
 //DisplayBlank turns on the Onscreen mute, don't know quite what that means
 func DisplayBlank(context echo.Context) error {
 	address := context.Param("address")
-	log.L.Infof("Blanking Display...")
+	log.L.Infof("Blanking Display on %s...", address)
 
 	err := helpers.SetBlank(address, true)
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-
+	log.L.Infof("Done!") //The way is open
 	return context.JSON(http.StatusOK, status.Blanked{true})
 
 }
 
 //DisplayUnBlank turns off the mysterious Onscreen mute, again, don't know quite what that means
 func DisplayUnBlank(context echo.Context) error {
-	log.L.Infof("Blanking Display...")
-
 	address := context.Param("address")
+	log.L.Infof("Unblanking Display on %s...", address)
 
 	err := helpers.SetBlank(address, false)
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-
+	log.L.Infof("Done!") //The path has been closed
 	return context.JSON(http.StatusOK, status.Blanked{false})
 }
 
 //BlankedStatus lets us see de way
 func BlankedStatus(context echo.Context) error {
 	address := context.Param("address")
+	log.L.Infof("Getting blanked status of %s...", address) //Print the blank status
 
 	status, err := helpers.GetBlankStatus(address)
 	if err != nil {
@@ -166,12 +175,13 @@ func VolumeLevel(context echo.Context) error {
 //Mute makes the projector be quiet
 func Mute(context echo.Context) error {
 	address := context.Param("address")
+	log.L.Infof("Muting %s...", address)
 
 	err := helpers.SetMute(address, true)
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
-
+	log.L.Infof("Done!") //The path has been closed
 
 	return context.JSON(http.StatusOK, status.Mute{true})
 }
@@ -179,12 +189,13 @@ func Mute(context echo.Context) error {
 //UnMute makes the projector noisy again
 func UnMute(context echo.Context) error {
 	address := context.Param("address")
+	log.L.Infof("Unmuting %s...", address)
 
 	err := helpers.SetMute(address, false)
 	if err != nil {
 		return context.JSON(http.StatusInternalServerError, err.Error())
 	}
-
+	log.L.Infof("Done!") //The way is open
 
 	return context.JSON(http.StatusOK, status.Mute{false})
 }
@@ -192,6 +203,7 @@ func UnMute(context echo.Context) error {
 //MuteStatus returns the Mute status, stating if mute is on or off
 func MuteStatus(context echo.Context) error {
 	address := context.Param("address")
+	log.L.Infof("Getting mute status of %s...", address) //Print the mute status of the display
 
 	status, err := helpers.GetMuteStatus(address)
 	if err != nil {
