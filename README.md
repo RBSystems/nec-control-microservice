@@ -4,3 +4,4 @@
 Microservice to provide control over the NEC projector
 
 For future reference and in the case something doesnt work, most of the microservice commands were taken from the documentation found here: https://www.necdisplay.com/documents/UserManuals/RS232_PJ_ControlCommands.pdf
+
