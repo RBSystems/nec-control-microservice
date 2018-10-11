@@ -21,9 +21,10 @@ func main() {
 	// Use the `secure` routing group to require authentication
 	secure := router.Group("", echo.WrapMiddleware(authmiddleware.Authenticate))
 
+	//Control endpoints
 	secure.GET("/:address/power/on", handlers.PowerOn)
-	secure.GET("/:address/volume/set/:level", handlers.SetVolume)
 	secure.GET("/:address/power/standby", handlers.PowerStandby)
+	secure.GET("/:address/volume/set/:level", handlers.SetVolume)
 	secure.GET("/:address/volume/mute", handlers.Mute)
 	secure.GET("/:address/volume/unmute", handlers.UnMute)
 	secure.GET("/:address/display/blank", handlers.DisplayBlank)

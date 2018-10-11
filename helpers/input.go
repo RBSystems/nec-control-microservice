@@ -9,54 +9,63 @@ import (
 func SetInput(address, port string) error {
 	//Map for all the different input hex values
 	inputs := map[string]byte{
-		"VGA1":      0x01,
-		"VGA2":      0x02,
-		"Video":     0x06,
-		"Component": 0x10, // AKA YPbPr
-		"HDMI1":     0x1A,
-		"HDMI2":     0x1B,
-		"LAN":       0x20, // AKA HDBaseT
+		"computer":  0x01,
+		"video":     0x06, // Yellow cable for RYW
+		"component": 0x10,
+		"hdmi1":     0xA1,
+		"hdmi2":     0xA2,
+		"hdbaset1":  0xBF, // AKA HDBaseT
 	}
 
-	log.L.Infof("Switching input for %s to %s...", address, port) //Tell us what you plan on doing
+	//Hex command to change the projector volume, it is going in a temporary Array as to not change its original value
+	tempArray := commands["ChangeInput"]
 
-	baseInputCommand := commands["ChangeInput"] //The base command to change input, the input value at position 6 will need to change based on input
+	//Make an empty byte array the size of the original command
+	inputCommand := make([]byte, len(tempArray))
+
+	//Copy the original array in to the new one as to not change the original
+	copy(inputCommand, tempArray)
 
 	//Switch statment to handle all the input cases
 	switch port {
-	case "VGA1":
-		baseInputCommand[6] = inputs["VGA1"]
-	case "VGA2":
-		baseInputCommand[6] = inputs["VGA2"]
-	case "Video":
-		baseInputCommand[6] = inputs["Video"]
-	case "Component":
-		baseInputCommand[6] = inputs["Component"]
+	case "computer":
+		inputCommand[6] = inputs["computer"]
+	case "video":
+		inputCommand[6] = inputs["video"]
+	case "component":
+		inputCommand[6] = inputs["component"]
 	case "hdmi1":
-		baseInputCommand[6] = inputs["HDMI1"]
+		inputCommand[6] = inputs["hdmi1"]
 	case "hdmi2":
-		baseInputCommand[6] = inputs["HDMI2"]
-	case "LAN":
-		baseInputCommand[6] = inputs["LAN"]
+		inputCommand[6] = inputs["hdmi2"]
+	case "hdbaset1":
+		inputCommand[6] = inputs["hdbaset1"]
 	default:
 		break
 	}
 
-	command := baseInputCommand
-	SendCommand(command, address) //Send the ring for Frodo to deliver
+	checkSum := getChecksum(inputCommand) //Calculate the checksum
+
+	inputCommand[7] = checkSum //Put the checksum value at the end of the change input command
+
+	log.L.Debugf("Command being sent is: %v", inputCommand) //Print out the command that will be sent in case I want to verify
+
+	response, err := SendCommand(inputCommand, address) //Send the ring for Frodo to deliver
+	log.L.Debugf("Projector Says: %v", response)        //Print da response!
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
 
 //GetInputStatus tells us which input the projector is currently on
-
 func GetInputStatus(address string) (status.Input, error) {
 
-	log.L.Infof("Getting input status from %s ", address)
 	command := commands["InputStatus"] //Hex command to get the Input status
 
 	response, err := SendCommand(command, address) //Execute the command, DEW IT
-	log.L.Debugf("Projector Says: %v", response)   //Print da response!
+	log.L.Infof("Projector Says: %v", response)    //Print da response!
 	if err != nil {
 		return status.Input{}, err
 	}
@@ -64,13 +73,27 @@ func GetInputStatus(address string) (status.Input, error) {
 	//Have to declare first before using in if statements...so I'll leave it blank
 	statuss := status.Input{""}
 
-	if response[7] == byte(1) && response[8] == byte(33) {
+	responseInputs := map[string]byte{
+		"vga1":      0x01,
+		"vga2":      0x02,
+		"Video":     0x06,
+		"Component": 0x10, // AKA YPbPr
+		"hdmi":      0x21,
+		"hdbaset":   0x27, // AKA HDBaseT
+	}
+
+	//Really need to figure out what this byte 33 means... I REMEMBERED!!!! Byte 33 is the hex command for the 21h
+	if response[7] == byte(1) && response[8] == responseInputs["hdmi"] {
 		statuss = status.Input{
 			Input: "hdmi1",
 		}
-	} else if response[7] == byte(2) && response[8] == byte(33) {
+	} else if response[7] == byte(2) && response[8] == responseInputs["hdmi"] {
 		statuss = status.Input{
 			Input: "hdmi2",
+		}
+	} else if response[7] == byte(1) && response[8] == responseInputs["hdbaset"] {
+		statuss = status.Input{
+			Input: "hdbaset1",
 		}
 	}
 	return statuss, nil
@@ -94,9 +117,6 @@ func SetBlank(address string, blank bool) error {
 
 //GetBlankStatus tells us if the picture is blanked or not.
 func GetBlankStatus(address string) (status.Blanked, error) {
-
-	log.L.Infof("Getting blanked status of %s...", address) //Print that the device is powering on
-
 	command := commands["MuteStatus"] //Hex command to get the blanked status (MuteStatus also handles this case)
 
 	response, err := SendCommand(command, address) //Execute the command, DEW IT

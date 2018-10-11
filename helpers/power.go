@@ -7,9 +7,9 @@ import (
 
 //PowerOn sends the command for the power to turn on
 func PowerOn(address string) error {
-	log.L.Infof("Setting power of %v to on...", address) //Print that the device is powering on
-	command := commands["PowerOn"]                       //Hex command to turn on the projector
-	response, err := SendCommand(command, address)       //Execute the command, DEW IT
+	powerOnCommand := commands["PowerOn"]                 //Hex command to turn on the projector
+	response, err := SendCommand(powerOnCommand, address) //Execute the command, DEW IT
+
 	log.L.Debugf("%v", response)
 	if err != nil {
 		log.L.Info("Nope Didn't work! - %v", err.Error())
@@ -21,10 +21,10 @@ func PowerOn(address string) error {
 
 //PowerStandby sends the command for the power to go to sleep
 func PowerStandby(address string) error {
-	log.L.Infof("Setting power of %v to standby...", address) //Print that the device is powering on
-	command := commands["Standby"]                            //Hex command to turn off the projector
-	response, err := SendCommand(command, address)            //Execute the command, DEW IT
-	log.L.Debugf("%v", response)
+	poweerOffCommand := commands["Standby"]                 //Hex command to turn off the projector
+	response, err := SendCommand(poweerOffCommand, address) //Execute the command, DEW IT
+
+	log.L.Debugf("%v", response) //Debug response for if things aren't working
 	if err != nil {
 		log.L.Info("Nope Didn't work! - %v", err.Error())
 		return err
@@ -35,12 +35,10 @@ func PowerStandby(address string) error {
 
 //GetPowerStatus will give the power status of the projector
 func GetPowerStatus(address string) (status.Power, error) {
+	powerStatusCommand := commands["PowerStatus"]             //Hex command to get the power status
+	response, err := SendCommand(powerStatusCommand, address) //Execute the command, DEW IT
 
-	log.L.Infof("Getting power status of %s...", address) //Print the device status
-	command := commands["PowerStatus"]                    //Hex command to get the power status
-
-	response, err := SendCommand(command, address)   //Execute the command, DEW IT
-	log.L.Debugf("Projector Response: %v", response) //Print da response!
+	log.L.Debugf("Projector Response: %v", response) //Debug response for if things aren't working
 	if err != nil {
 		return status.Power{}, err
 	}
