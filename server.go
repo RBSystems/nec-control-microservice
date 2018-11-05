@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/byuoitav/authmiddleware"
+	"github.com/byuoitav/common"
 	"github.com/byuoitav/nec-control-microservice/handlers"
 	"github.com/labstack/echo"
-	"github.com/labstack/echo/middleware"
 )
 
 func main() {
@@ -14,9 +14,7 @@ func main() {
 	// log.SetLevel("debug")
 
 	port := ":8020"
-	router := echo.New()
-	router.Pre(middleware.RemoveTrailingSlash())
-	router.Use(middleware.CORS())
+	router := common.NewRouter()
 
 	// Use the `secure` routing group to require authentication
 	secure := router.Group("", echo.WrapMiddleware(authmiddleware.Authenticate))

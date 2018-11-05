@@ -1,0 +1,8 @@
+{
+    "name": "nec-control-microservice",
+    "port": ":8020",
+    "env-vars": [
+        "BYPASS_AUTH",
+        "ROOM_SYSTEM"
+    ]
+}
