@@ -7,17 +7,25 @@ import (
 
 	"github.com/byuoitav/common/log"
 	"github.com/byuoitav/common/status"
+	"github.com/byuoitav/common/v2/auth"
 
 	"github.com/byuoitav/nec-control-microservice/helpers"
 	"github.com/labstack/echo"
 )
-
+	
 ////////////////////////////////////////
 //Power Controls
 ////////////////////////////////////////
 
 //PowerOn helps with turining on the projector
 func PowerOn(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "write-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")                  //Get the address of the display
 	log.L.Infof("Setting power of %v to on...", address) //Print that the device is powering on
 
@@ -32,6 +40,13 @@ func PowerOn(context echo.Context) error {
 
 //PowerStandby helps with turining on the projector
 func PowerStandby(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "write-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")                       //Nab that there address
 	log.L.Infof("Setting power of %v to standby...", address) //Print that the device is powering off
 
@@ -47,6 +62,13 @@ func PowerStandby(context echo.Context) error {
 
 //PowerStatus reports the running status of the projector, on or standby
 func PowerStatus(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "read-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")
 	log.L.Infof("Getting power status of %s...", address) //Print the device status
 
@@ -64,6 +86,13 @@ func PowerStatus(context echo.Context) error {
 
 //SetInputPort sets the input port on the projector
 func SetInputPort(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "write-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	port := context.Param("port") //Get the port and store it to use later.
 	address := context.Param("address")
 
@@ -82,6 +111,13 @@ func SetInputPort(context echo.Context) error {
 
 //InputStatus helps us get which input the projector is on
 func InputStatus(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "read-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")
 	log.L.Infof("Getting input status from %s ", address)
 
@@ -95,6 +131,13 @@ func InputStatus(context echo.Context) error {
 
 //DisplayBlank turns on the Onscreen mute, don't know quite what that means
 func DisplayBlank(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "write-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")
 	log.L.Infof("Blanking Display on %s...", address)
 
@@ -110,6 +153,13 @@ func DisplayBlank(context echo.Context) error {
 
 //DisplayUnBlank turns off the mysterious Onscreen mute, again, don't know quite what that means
 func DisplayUnBlank(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "write-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")
 	log.L.Infof("Unblanking Display on %s...", address)
 
@@ -124,6 +174,13 @@ func DisplayUnBlank(context echo.Context) error {
 
 //BlankedStatus lets us see de way
 func BlankedStatus(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "read-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")
 	log.L.Infof("Getting blanked status of %s...", address) //Print the blank status
 
@@ -141,6 +198,13 @@ func BlankedStatus(context echo.Context) error {
 
 //SetVolume sends a command to set the projector volume
 func SetVolume(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "write-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")
 	volumeLevel := context.Param("level")
 
@@ -161,6 +225,12 @@ func SetVolume(context echo.Context) error {
 
 //VolumeLevel gets us how noisy things are getting
 func VolumeLevel(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "read-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
 
 	address := context.Param("address")
 
@@ -174,6 +244,13 @@ func VolumeLevel(context echo.Context) error {
 
 //Mute makes the projector be quiet
 func Mute(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "write-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")
 	log.L.Infof("Muting %s...", address)
 
@@ -188,6 +265,13 @@ func Mute(context echo.Context) error {
 
 //UnMute makes the projector noisy again
 func UnMute(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "write-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")
 	log.L.Infof("Unmuting %s...", address)
 
@@ -202,6 +286,13 @@ func UnMute(context echo.Context) error {
 
 //MuteStatus returns the Mute status, stating if mute is on or off
 func MuteStatus(context echo.Context) error {
+	if ok, err := auth.CheckAuthForLocalEndpoints(context, "read-state"); !ok {
+		if err != nil {
+			log.L.Warnf("Problem getting auth: %v", err.Error())
+		}
+		return context.String(http.StatusUnauthorized, "unauthorized")
+	}
+
 	address := context.Param("address")
 	log.L.Infof("Getting mute status of %s...", address) //Print the mute status of the display
 
