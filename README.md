@@ -12,3 +12,4 @@ For a list of all the commands: https://www.necdisplay.com/documents/UserManuals
 
 For more information on the inputs: https://www.necdisplay.com/documents/UserManuals/PJ-ControlCommands-Appendixes.pdf
 
+
