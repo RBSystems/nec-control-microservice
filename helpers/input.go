@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"github.com/byuoitav/common/log"
+	"github.com/byuoitav/common/nerr"
 	"github.com/byuoitav/common/status"
 )
 
@@ -135,4 +136,30 @@ func GetBlankStatus(address string) (status.Blanked, error) {
 		status.Blanked = false
 	}
 	return status, nil
+}
+
+// ActiveInput will tell if a projector has an active input or not
+func ActiveInput(address string) (bool, *nerr.E) {
+	log.L.Debugf("Checking for active input for %s", address)
+
+	// operationStatus is a map of the commands according to the documentation from NEC
+	// operationStatus := map[string]byte{
+	// 	"Standby":          0x00,
+	// 	"StandbyError":     0x06, // If there is an error with the projector this will be the satus we want to see
+	// 	"StandbyPowerSave": 0x0F,
+	// 	"NetworkStandby":   0x10, // This is the standby that the projectors should be using
+	// 	"PowerOn":          0x04, // I believe this means the projector is on...
+	// }
+
+	//TODO: Implement the operationStatus to start getting information back. See pg. 83 of the documentation.
+
+	command := commands["AcitveInput"]
+
+	response, err := SendCommand(command, address)
+	if err != nil {
+		return false, err.Add("Could not get an active signal")
+	}
+	log.L.Debugf("Projector response: %v", response)
+
+	return false, nil
 }

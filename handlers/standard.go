@@ -12,7 +12,7 @@ import (
 	"github.com/byuoitav/nec-control-microservice/helpers"
 	"github.com/labstack/echo"
 )
-	
+
 ////////////////////////////////////////
 //Power Controls
 ////////////////////////////////////////
@@ -302,4 +302,17 @@ func MuteStatus(context echo.Context) error {
 	}
 
 	return context.JSON(http.StatusOK, status)
+}
+
+// hasActiveInput will return if the display is displaying or not
+func getActiveInput(context echo.Context) error {
+	address := context.Param("address")
+
+	active, err := helpers.ActiveInput(address)
+	if err != nil {
+		log.L.Warnf(err.Error())
+		return context.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return context.JSON(http.StatusOK, active)
 }
