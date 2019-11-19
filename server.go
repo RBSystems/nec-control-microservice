@@ -8,14 +8,8 @@ import (
 )
 
 func main() {
-
-	// log.SetLevel("debug")
-
 	port := ":8020"
 	router := common.NewRouter()
-
-	// Use the `secure` routing group to require authentication
-	//secure := router.Group("", echo.WrapMiddleware(authmiddleware.Authenticate))
 
 	//Control endpoints
 	router.GET("/:address/power/on", handlers.PowerOn)
