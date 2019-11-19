@@ -17,7 +17,7 @@ import (
 //Power Controls
 ////////////////////////////////////////
 
-//PowerOn helps with turining on the projector
+//PowerOn helps with turning on the projector
 func PowerOn(context echo.Context) error {
 	if ok, err := auth.CheckAuthForLocalEndpoints(context, "write-state"); !ok {
 		if err != nil {
